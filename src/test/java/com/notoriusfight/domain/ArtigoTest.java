@@ -85,7 +85,7 @@ class ArtigoTest {
         Artigo artigo = novoArtigo("3.000", "12.90");
         Categoria categoriaOriginal = new Categoria("Luvas");
         Categoria categoria = new Categoria("Material escolar");
-        Fornecedor fornecedor = new Fornecedor("Fornecedor escolar", "12345678000199");
+        Fornecedor fornecedor = new Fornecedor("Fornecedor escolar", "12345678000195");
         categoriaOriginal.adicionarArtigo(artigo);
 
         artigo.alterarDescricao("Luva de boxe 12 oz");

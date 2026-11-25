@@ -15,8 +15,8 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("NotoriusFight API")
-                        .description("API didática para cadastro de artigos, categorias, fornecedores "
-                                + "e movimentações de estoque.")
+                        .description("API didática para artigos, fornecedores, pessoas, clientes, "
+                                + "colaboradores, vendas e movimentações de estoque.")
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("NotoriusFight")))

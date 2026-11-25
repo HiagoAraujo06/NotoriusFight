@@ -11,10 +11,10 @@ class FornecedorTest {
     void deveCriarFornecedorAtivo() {
         Fornecedor fornecedor = new Fornecedor(
                 "Arena Distribuidora",
-                "12345678000190");
+                "12345678000195");
 
         assertEquals("Arena Distribuidora", fornecedor.getRazaoSocial());
-        assertEquals("12345678000190", fornecedor.getCnpj());
+        assertEquals("12345678000195", fornecedor.getCnpj());
         assertEquals(Status.ATIVO, fornecedor.getStatus());
     }
 
@@ -29,12 +29,12 @@ class FornecedorTest {
     void deveRejeitarRazaoSocialVazia() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Fornecedor(" ", "12345678000190"));
+                () -> new Fornecedor(" ", "12345678000195"));
     }
 
     @Test
     void deveInativarFornecedor() {
-        Fornecedor fornecedor = new Fornecedor("Fornecedor", "12345678000190");
+        Fornecedor fornecedor = new Fornecedor("Fornecedor", "12345678000195");
 
         fornecedor.inativar();
 

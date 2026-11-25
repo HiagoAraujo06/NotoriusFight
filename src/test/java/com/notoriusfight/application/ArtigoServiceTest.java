@@ -41,7 +41,7 @@ class ArtigoServiceTest {
         Categoria categoria = categoriaRepository.save(new Categoria("Kimonos de teste"));
         Fornecedor fornecedor = fornecedorRepository.save(new Fornecedor(
                 "Fornecedor de teste",
-                "11111111000191"));
+                "11222333000181"));
 
         Artigo cadastrado = artigoService.cadastrar(
                 novoArtigo("TESTE-SERVICE-001"),
