@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 08 — CRUD completo, estoque, filtros e paginação**
+Estado do projeto: **Aula 09 — Documentação OpenAPI**
 
 | Aula | Conteúdo |
 |---|---|
@@ -16,6 +16,7 @@ Estado do projeto: **Aula 08 — CRUD completo, estoque, filtros e paginação**
 | 06 | Evolução do modelo: fornecedor e estoque mínimo |
 | 07 | API REST, DTOs e mapeadores |
 | 08 | CRUD completo, estoque, filtros e paginação |
+| 09 | Documentação OpenAPI |
 
 ## Ambiente
 
