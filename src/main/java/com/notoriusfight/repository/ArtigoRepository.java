@@ -20,11 +20,11 @@ public interface ArtigoRepository extends JpaRepository<Artigo, Long> {
 
     List<Artigo> findByStatus(Status status);
 
-    @EntityGraph(attributePaths = "categoria")
+    @EntityGraph(attributePaths = {"categoria", "fornecedor"})
     @Query("select p from Artigo p order by p.id")
     List<Artigo> buscarTodosComRelacionamentos();
 
-    @EntityGraph(attributePaths = "categoria")
+    @EntityGraph(attributePaths = {"categoria", "fornecedor"})
     @Query("select p from Artigo p where p.id = :id")
     Optional<Artigo> buscarPorIdComRelacionamentos(@Param("id") Long id);
 }

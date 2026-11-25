@@ -1,7 +1,9 @@
 package com.notoriusfight.application;
 
+import com.notoriusfight.domain.Fornecedor;
 import com.notoriusfight.domain.Categoria;
 import com.notoriusfight.domain.Artigo;
+import com.notoriusfight.repository.FornecedorRepository;
 import com.notoriusfight.repository.CategoriaRepository;
 import com.notoriusfight.repository.ArtigoRepository;
 import org.junit.jupiter.api.Test;
@@ -29,30 +31,39 @@ class ArtigoServiceTest {
     private CategoriaRepository categoriaRepository;
 
     @Autowired
+    private FornecedorRepository fornecedorRepository;
+
+    @Autowired
     private ArtigoRepository artigoRepository;
 
     @Test
-    void deveCadastrarArtigoComCategoria() {
+    void deveCadastrarArtigoComCategoriaEFornecedor() {
         Categoria categoria = categoriaRepository.save(new Categoria("Kimonos de teste"));
+        Fornecedor fornecedor = fornecedorRepository.save(new Fornecedor(
+                "Fornecedor de teste",
+                "11111111000191"));
 
         Artigo cadastrado = artigoService.cadastrar(
                 novoArtigo("TESTE-SERVICE-001"),
-                categoria.getId());
+                categoria.getId(),
+                fornecedor.getId());
 
         assertNotNull(cadastrado.getId());
         assertEquals(categoria.getId(), cadastrado.getCategoria().getId());
+        assertEquals(fornecedor.getId(), cadastrado.getFornecedor().getId());
     }
 
     @Test
     void deveImpedirSkuDuplicado() {
         Categoria categoria = categoriaRepository.save(new Categoria("Categoria duplicidade"));
-        artigoService.cadastrar(novoArtigo("TESTE-DUPLICADO"), categoria.getId());
+        artigoService.cadastrar(novoArtigo("TESTE-DUPLICADO"), categoria.getId(), null);
 
         assertThrows(
                 RecursoDuplicadoException.class,
                 () -> artigoService.cadastrar(
                         novoArtigo("TESTE-DUPLICADO"),
-                        categoria.getId()));
+                        categoria.getId(),
+                        null));
     }
 
     @Test
@@ -61,7 +72,7 @@ class ArtigoServiceTest {
 
         assertThrows(
                 RecursoNaoEncontradoException.class,
-                () -> artigoService.cadastrar(artigo, Long.MAX_VALUE));
+                () -> artigoService.cadastrar(artigo, Long.MAX_VALUE, null));
         assertEquals(false, artigoRepository.existsBySku("TESTE-SEM-GRUPO"));
     }
 
@@ -70,7 +81,8 @@ class ArtigoServiceTest {
         Categoria categoria = categoriaRepository.save(new Categoria("Categoria dirty checking"));
         Artigo artigo = artigoService.cadastrar(
                 novoArtigo("TESTE-DIRTY-CHECKING"),
-                categoria.getId());
+                categoria.getId(),
+                null);
 
         artigoService.receberEstoque(artigo.getId(), new BigDecimal("5.000"));
 
@@ -84,6 +96,7 @@ class ArtigoServiceTest {
                 "Artigo de teste",
                 new BigDecimal("10.000"),
                 new BigDecimal("25.90"),
+                new BigDecimal("2.000"),
                 LocalDate.of(2026, 8, 27));
     }
 }

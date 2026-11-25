@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 05 — Repositories, serviços e transações**
+Estado do projeto: **Aula 06 — Evolução do modelo: fornecedor e estoque mínimo**
 
 | Aula | Conteúdo |
 |---|---|
@@ -13,6 +13,7 @@ Estado do projeto: **Aula 05 — Repositories, serviços e transações**
 | 03 | Modelo de domínio com Java puro |
 | 04 | Persistência com JPA, PostgreSQL e Liquibase |
 | 05 | Repositories, serviços e transações |
+| 06 | Evolução do modelo: fornecedor e estoque mínimo |
 
 ## Ambiente
 

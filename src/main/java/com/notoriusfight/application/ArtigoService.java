@@ -1,7 +1,9 @@
 package com.notoriusfight.application;
 
+import com.notoriusfight.domain.Fornecedor;
 import com.notoriusfight.domain.Categoria;
 import com.notoriusfight.domain.Artigo;
+import com.notoriusfight.repository.FornecedorRepository;
 import com.notoriusfight.repository.CategoriaRepository;
 import com.notoriusfight.repository.ArtigoRepository;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,19 @@ public class ArtigoService {
 
     private final ArtigoRepository artigoRepository;
     private final CategoriaRepository categoriaRepository;
+    private final FornecedorRepository fornecedorRepository;
 
     public ArtigoService(
             ArtigoRepository artigoRepository,
-            CategoriaRepository categoriaRepository) {
+            CategoriaRepository categoriaRepository,
+            FornecedorRepository fornecedorRepository) {
         this.artigoRepository = artigoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.fornecedorRepository = fornecedorRepository;
     }
 
     @Transactional
-    public Artigo cadastrar(Artigo artigo, Long categoriaId) {
+    public Artigo cadastrar(Artigo artigo, Long categoriaId, Long fornecedorId) {
         if (artigoRepository.existsBySku(artigo.getSku())) {
             throw new RecursoDuplicadoException("SKU já cadastrado");
         }
@@ -33,6 +38,13 @@ public class ArtigoService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
                         "Categoria não encontrada"));
         categoria.adicionarArtigo(artigo);
+
+        if (fornecedorId != null) {
+            Fornecedor fornecedor = fornecedorRepository.findById(fornecedorId)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException(
+                            "Fornecedor não encontrado"));
+            artigo.associarFornecedor(fornecedor);
+        }
 
         return artigoRepository.save(artigo);
     }
