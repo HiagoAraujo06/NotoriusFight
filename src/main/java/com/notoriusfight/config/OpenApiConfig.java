@@ -17,10 +17,11 @@ public class OpenApiConfig {
     OpenAPI notoriusFightOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
-                        .addSecuritySchemes("basicAuth", new SecurityScheme()
+                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
-                                .scheme("basic")))
-                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()
                         .title("NotoriusFight API")
                         .description("API didática para artigos, fornecedores, pessoas, clientes, "

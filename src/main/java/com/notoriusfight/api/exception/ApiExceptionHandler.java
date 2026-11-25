@@ -1,6 +1,7 @@
 package com.notoriusfight.api.exception;
 
 import com.notoriusfight.application.RecursoDuplicadoException;
+import com.notoriusfight.application.CredenciaisInvalidasException;
 import com.notoriusfight.application.RecursoEmUsoException;
 import com.notoriusfight.application.RecursoNaoEncontradoException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,17 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(CredenciaisInvalidasException.class)
+    public ResponseEntity<ApiError> tratarCredenciaisInvalidas(
+            CredenciaisInvalidasException exception,
+            HttpServletRequest request) {
+        return resposta(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage(),
+                request,
+                Map.of());
+    }
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<ApiError> tratarNaoEncontrado(
