@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 06 — Evolução do modelo: fornecedor e estoque mínimo**
+Estado do projeto: **Aula 07 — API REST, DTOs e mapeadores**
 
 | Aula | Conteúdo |
 |---|---|
@@ -14,6 +14,7 @@ Estado do projeto: **Aula 06 — Evolução do modelo: fornecedor e estoque mín
 | 04 | Persistência com JPA, PostgreSQL e Liquibase |
 | 05 | Repositories, serviços e transações |
 | 06 | Evolução do modelo: fornecedor e estoque mínimo |
+| 07 | API REST, DTOs e mapeadores |
 
 ## Ambiente
 
