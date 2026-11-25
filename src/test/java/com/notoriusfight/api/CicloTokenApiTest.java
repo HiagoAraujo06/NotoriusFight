@@ -3,6 +3,7 @@ package com.notoriusfight.api;
 import com.notoriusfight.domain.ContaAcesso;
 import com.notoriusfight.domain.Pessoa;
 import com.notoriusfight.repository.ContaAcessoRepository;
+import com.notoriusfight.repository.EventoSegurancaRepository;
 import com.notoriusfight.repository.PessoaRepository;
 import com.notoriusfight.repository.SessaoRefreshTokenRepository;
 import com.jayway.jsonpath.JsonPath;
@@ -48,6 +49,9 @@ class CicloTokenApiTest {
     private SessaoRefreshTokenRepository sessaoRepository;
 
     @Autowired
+    private EventoSegurancaRepository eventoRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -58,6 +62,7 @@ class CicloTokenApiTest {
 
     @AfterEach
     void limparCenario() {
+        eventoRepository.deleteAll();
         sessaoRepository.deleteAll();
         if (contaCriada != null) {
             contaRepository.deleteById(contaCriada.getId());
