@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 14 — Autorização e perfis**
+Estado do projeto: **Aula 15 — Testes e cobertura com JaCoCo**
 
 | Aula | Conteúdo |
 |---|---|
@@ -22,6 +22,7 @@ Estado do projeto: **Aula 14 — Autorização e perfis**
 | 12 | Autenticação com Spring Security |
 | 13 | JWT e Resource Server |
 | 14 | Autorização e perfis |
+| 15 | Testes e cobertura com JaCoCo |
 
 ## Ambiente
 
