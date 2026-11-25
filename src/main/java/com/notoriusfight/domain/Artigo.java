@@ -1,19 +1,64 @@
 package com.notoriusfight.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(
+        name = "artigo",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_artigo_sku",
+                columnNames = "sku"))
 public class Artigo {
 
-    private final String sku;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "sku", nullable = false, length = 50)
+    private String sku;
+
+    @Column(nullable = false, length = 150)
     private String descricao;
+
+    @Column(name = "saldo_estoque", nullable = false, precision = 18, scale = 3)
     private BigDecimal saldoEstoque;
+
+    @Column(name = "valor_unitario", nullable = false, precision = 18, scale = 2)
     private BigDecimal valorUnitario;
-    private final LocalDate dataCadastro;
+
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDate dataCadastro;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Status status;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "categoria_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_artigo_categoria"))
     private Categoria categoria;
+
+    protected Artigo() {
+    }
 
     public Artigo(
             String sku,
@@ -92,6 +137,10 @@ public class Artigo {
 
     public String getSku() {
         return sku;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getDescricao() {
