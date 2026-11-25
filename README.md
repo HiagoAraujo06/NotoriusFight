@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 04 — Persistência com JPA, PostgreSQL e Liquibase**
+Estado do projeto: **Aula 05 — Repositories, serviços e transações**
 
 | Aula | Conteúdo |
 |---|---|
@@ -12,6 +12,7 @@ Estado do projeto: **Aula 04 — Persistência com JPA, PostgreSQL e Liquibase**
 | 02 | Definição do tema e criação do projeto Spring Boot |
 | 03 | Modelo de domínio com Java puro |
 | 04 | Persistência com JPA, PostgreSQL e Liquibase |
+| 05 | Repositories, serviços e transações |
 
 ## Ambiente
 
