@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 15 — Testes e cobertura com JaCoCo**
+Estado do projeto: **Aula 16 — Renovação e revogação de tokens**
 
 | Aula | Conteúdo |
 |---|---|
@@ -23,6 +23,7 @@ Estado do projeto: **Aula 15 — Testes e cobertura com JaCoCo**
 | 13 | JWT e Resource Server |
 | 14 | Autorização e perfis |
 | 15 | Testes e cobertura com JaCoCo |
+| 16 | Renovação e revogação de tokens |
 
 ## Ambiente
 
