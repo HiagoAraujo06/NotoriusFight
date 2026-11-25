@@ -66,3 +66,12 @@ docs                              tema, correções e situação
 ```
 
 Veja também [as diferenças em relação ao projeto de referência](docs/diferencas-e-correcoes.md).
+
+## Histórico por aula
+
+Cada aula, da 00 à 17, tem um commit e uma tag `aula-NN-*`, organizados em 25/11/2026 a partir do projeto de referência.
+O `main` traz a versão final, com os campos próprios da loja e as correções.
+
+```bash
+git tag --list "aula-*"
+```
