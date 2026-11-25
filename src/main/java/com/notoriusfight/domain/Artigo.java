@@ -145,6 +145,28 @@ public class Artigo {
                 "Valor unitário não pode ser negativo");
     }
 
+    public void alterarEstoqueMinimo(BigDecimal novoEstoqueMinimo) {
+        this.estoqueMinimo = validarNaoNegativo(
+                novoEstoqueMinimo,
+                "Estoque mínimo não pode ser negativo");
+    }
+
+    public void alterarCategoria(Categoria novaCategoria) {
+        Objects.requireNonNull(
+                novaCategoria,
+                "Categoria é obrigatória");
+        if (this.categoria == novaCategoria) {
+            return;
+        }
+
+        novaCategoria.validarInclusao(this);
+        if (this.categoria != null) {
+            this.categoria.removerInternamente(this);
+        }
+        this.categoria = novaCategoria;
+        novaCategoria.adicionarInternamente(this);
+    }
+
     public void ativar() {
         this.status = Status.ATIVO;
     }
@@ -167,6 +189,10 @@ public class Artigo {
         this.fornecedor = Objects.requireNonNull(
                 fornecedor,
                 "Fornecedor é obrigatório");
+    }
+
+    public void alterarFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
     }
 
     public String getSku() {

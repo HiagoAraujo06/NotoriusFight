@@ -43,20 +43,13 @@ public class Categoria {
 
     public void adicionarArtigo(Artigo artigo) {
         Objects.requireNonNull(artigo, "Artigo é obrigatório");
-
-        boolean codigoJaUtilizado = artigos.stream()
-                .anyMatch(item -> item != artigo
-                        && item.getSku().equals(artigo.getSku()));
-
-        if (codigoJaUtilizado) {
-            throw new IllegalArgumentException("SKU já utilizado na categoria");
-        }
-
+        validarInclusao(artigo);
         artigo.associarAo(this);
+        adicionarInternamente(artigo);
+    }
 
-        if (!artigos.contains(artigo)) {
-            artigos.add(artigo);
-        }
+    public void alterarNome(String novoNome) {
+        this.nome = validarTextoObrigatorio(novoNome, "Nome da categoria é obrigatório");
     }
 
     public void ativar() {
@@ -81,6 +74,26 @@ public class Categoria {
 
     public List<Artigo> getArtigos() {
         return List.copyOf(artigos);
+    }
+
+    void validarInclusao(Artigo artigo) {
+        boolean codigoJaUtilizado = artigos.stream()
+                .anyMatch(item -> item != artigo
+                        && item.getSku().equals(artigo.getSku()));
+
+        if (codigoJaUtilizado) {
+            throw new IllegalArgumentException("SKU já utilizado na categoria");
+        }
+    }
+
+    void adicionarInternamente(Artigo artigo) {
+        if (!artigos.contains(artigo)) {
+            artigos.add(artigo);
+        }
+    }
+
+    void removerInternamente(Artigo artigo) {
+        artigos.remove(artigo);
     }
 
     private static String validarTextoObrigatorio(String texto, String mensagem) {

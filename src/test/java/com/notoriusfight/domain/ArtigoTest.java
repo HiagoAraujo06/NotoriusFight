@@ -80,6 +80,29 @@ class ArtigoTest {
         assertEquals(Status.ATIVO, artigo.getStatus());
     }
 
+    @Test
+    void deveAlterarDadosEditaveis() {
+        Artigo artigo = novoArtigo("3.000", "12.90");
+        Categoria categoriaOriginal = new Categoria("Luvas");
+        Categoria categoria = new Categoria("Material escolar");
+        Fornecedor fornecedor = new Fornecedor("Fornecedor escolar", "12345678000199");
+        categoriaOriginal.adicionarArtigo(artigo);
+
+        artigo.alterarDescricao("Luva de boxe 12 oz");
+        artigo.alterarValorUnitario(new BigDecimal("19.90"));
+        artigo.alterarEstoqueMinimo(new BigDecimal("2.000"));
+        artigo.alterarCategoria(categoria);
+        artigo.alterarFornecedor(fornecedor);
+
+        assertEquals("Luva de boxe 12 oz", artigo.getDescricao());
+        assertEquals(0, new BigDecimal("19.90").compareTo(artigo.getValorUnitario()));
+        assertEquals(0, new BigDecimal("2.000").compareTo(artigo.getEstoqueMinimo()));
+        assertEquals(categoria, artigo.getCategoria());
+        assertEquals(fornecedor, artigo.getFornecedor());
+        assertEquals(0, categoriaOriginal.getArtigos().size());
+        assertEquals(1, categoria.getArtigos().size());
+    }
+
     private Artigo novoArtigo(String saldo, String valorUnitario) {
         return new Artigo(
                 "7890000000001",

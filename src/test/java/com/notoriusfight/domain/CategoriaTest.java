@@ -67,6 +67,15 @@ class CategoriaTest {
                 () -> categoria.getArtigos().add(novoArtigo("7890000000002")));
     }
 
+    @Test
+    void deveAlterarNomeRemovendoEspacosExternos() {
+        Categoria categoria = new Categoria("Luvas");
+
+        categoria.alterarNome("  Material escolar  ");
+
+        assertEquals("Material escolar", categoria.getNome());
+    }
+
     private Artigo novoArtigo(String sku) {
         return new Artigo(
                 sku,
