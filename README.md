@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 13 — JWT e Resource Server**
+Estado do projeto: **Aula 14 — Autorização e perfis**
 
 | Aula | Conteúdo |
 |---|---|
@@ -21,6 +21,7 @@ Estado do projeto: **Aula 13 — JWT e Resource Server**
 | 11 | Concorrência de estoque |
 | 12 | Autenticação com Spring Security |
 | 13 | JWT e Resource Server |
+| 14 | Autorização e perfis |
 
 ## Ambiente
 
