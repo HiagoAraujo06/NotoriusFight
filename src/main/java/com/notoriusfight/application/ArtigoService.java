@@ -7,6 +7,8 @@ import com.notoriusfight.domain.Status;
 import com.notoriusfight.repository.FornecedorRepository;
 import com.notoriusfight.repository.CategoriaRepository;
 import com.notoriusfight.repository.ArtigoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -24,14 +26,17 @@ public class ArtigoService {
     private final ArtigoRepository artigoRepository;
     private final CategoriaRepository categoriaRepository;
     private final FornecedorRepository fornecedorRepository;
+    private final EntityManager entityManager;
 
     public ArtigoService(
             ArtigoRepository artigoRepository,
             CategoriaRepository categoriaRepository,
-            FornecedorRepository fornecedorRepository) {
+            FornecedorRepository fornecedorRepository,
+            EntityManager entityManager) {
         this.artigoRepository = artigoRepository;
         this.categoriaRepository = categoriaRepository;
         this.fornecedorRepository = fornecedorRepository;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -68,6 +73,7 @@ public class ArtigoService {
     @Transactional
     public Artigo receberEstoque(Long id, BigDecimal quantidade) {
         Artigo artigo = buscarEntidade(id);
+        entityManager.refresh(artigo, LockModeType.PESSIMISTIC_WRITE);
         artigo.receberEstoque(quantidade);
         return artigo;
     }
@@ -75,6 +81,7 @@ public class ArtigoService {
     @Transactional
     public Artigo retirarEstoque(Long id, BigDecimal quantidade) {
         Artigo artigo = buscarEntidade(id);
+        entityManager.refresh(artigo, LockModeType.PESSIMISTIC_WRITE);
         artigo.retirarEstoque(quantidade);
         return artigo;
     }

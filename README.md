@@ -3,7 +3,7 @@
 API REST de uma loja de artigos de luta. Projeto da disciplina, adaptado do projeto de referência
 [suporteos2026](https://github.com/jeffersonarpasserini/suporteos2026).
 
-Estado do projeto: **Aula 10 — Pessoas, clientes, colaboradores e vendas**
+Estado do projeto: **Aula 11 — Concorrência de estoque**
 
 | Aula | Conteúdo |
 |---|---|
@@ -18,6 +18,7 @@ Estado do projeto: **Aula 10 — Pessoas, clientes, colaboradores e vendas**
 | 08 | CRUD completo, estoque, filtros e paginação |
 | 09 | Documentação OpenAPI |
 | 10 | Pessoas, clientes, colaboradores e vendas |
+| 11 | Concorrência de estoque |
 
 ## Ambiente
 

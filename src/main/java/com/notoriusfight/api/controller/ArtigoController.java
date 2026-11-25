@@ -164,7 +164,7 @@ public class ArtigoController {
     }
 
     @Operation(summary = "Receber estoque",
-            description = "Soma uma quantidade positiva ao saldo atual. Repetir a chamada repete o efeito.")
+            description = "Bloqueia o artigo e soma uma quantidade positiva ao saldo atual. Repetir a chamada repete o efeito.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Entrada registrada"),
             @ApiResponse(responseCode = "400", description = "Quantidade inválida",
@@ -181,7 +181,7 @@ public class ArtigoController {
     }
 
     @Operation(summary = "Retirar estoque",
-            description = "Subtrai uma quantidade positiva sem permitir saldo negativo. Repetir a chamada repete o efeito.")
+            description = "Bloqueia o artigo e subtrai uma quantidade positiva sem permitir saldo negativo. Repetir a chamada repete o efeito.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Saída registrada"),
             @ApiResponse(responseCode = "400", description = "Quantidade inválida ou saldo insuficiente",

@@ -12,6 +12,8 @@ import com.notoriusfight.repository.ClienteRepository;
 import com.notoriusfight.repository.ColaboradorRepository;
 import com.notoriusfight.repository.ArtigoRepository;
 import com.notoriusfight.repository.VendaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -29,13 +33,16 @@ public class VendaService {
     private final ClienteRepository clienteRepository;
     private final ColaboradorRepository colaboradorRepository;
     private final ArtigoRepository artigoRepository;
+    private final EntityManager entityManager;
 
     public VendaService(VendaRepository repository, ClienteRepository clienteRepository,
-                        ColaboradorRepository colaboradorRepository, ArtigoRepository artigoRepository) {
+                        ColaboradorRepository colaboradorRepository, ArtigoRepository artigoRepository,
+                        EntityManager entityManager) {
         this.repository = repository;
         this.clienteRepository = clienteRepository;
         this.colaboradorRepository = colaboradorRepository;
         this.artigoRepository = artigoRepository;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -70,10 +77,18 @@ public class VendaService {
     public Venda finalizar(Long id) {
         Venda venda = buscarEntidade(id);
         validarParticipantes(venda.getCliente(), venda.getVendedor());
-        for (ItemVenda item : venda.getItens()) {
-            if (item.getArtigo().getStatus() != Status.ATIVO)
+
+        List<ItemVenda> itensOrdenados = venda.getItens().stream()
+                .sorted(Comparator.comparing(item -> item.getArtigo().getId()))
+                .toList();
+
+        for (ItemVenda item : itensOrdenados) {
+            Artigo artigo = item.getArtigo();
+            entityManager.refresh(artigo, LockModeType.PESSIMISTIC_WRITE);
+
+            if (artigo.getStatus() != Status.ATIVO)
                 throw new IllegalArgumentException("Todos os artigos da venda devem estar ativos");
-            item.getArtigo().retirarEstoque(item.getQuantidade());
+            artigo.retirarEstoque(item.getQuantidade());
         }
         venda.finalizar();
         return venda;

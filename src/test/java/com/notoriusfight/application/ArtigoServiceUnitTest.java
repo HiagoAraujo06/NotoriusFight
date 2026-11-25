@@ -5,6 +5,7 @@ import com.notoriusfight.domain.Artigo;
 import com.notoriusfight.repository.FornecedorRepository;
 import com.notoriusfight.repository.CategoriaRepository;
 import com.notoriusfight.repository.ArtigoRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,9 @@ class ArtigoServiceUnitTest {
 
     @Mock
     private FornecedorRepository fornecedorRepository;
+
+    @Mock
+    private EntityManager entityManager;
 
     @InjectMocks
     private ArtigoService service;
