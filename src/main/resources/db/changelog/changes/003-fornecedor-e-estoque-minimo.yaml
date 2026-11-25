@@ -1,0 +1,160 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-01-create-fornecedor
+      author: notoriusfight
+      comment: Cria a entidade fornecedor identificada por CNPJ.
+      changes:
+        - createTable:
+            tableName: fornecedor
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_fornecedor
+                    nullable: false
+              - column:
+                  name: razao_social
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cnpj
+                  type: VARCHAR(14)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: fornecedor
+
+  - changeSet:
+      id: 003-02-unique-cnpj-fornecedor
+      author: notoriusfight
+      changes:
+        - addUniqueConstraint:
+            tableName: fornecedor
+            columnNames: cnpj
+            constraintName: uk_fornecedor_cnpj
+      rollback:
+        - dropUniqueConstraint:
+            tableName: fornecedor
+            constraintName: uk_fornecedor_cnpj
+
+  - changeSet:
+      id: 003-03-check-status-fornecedor
+      author: notoriusfight
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE fornecedor
+              ADD CONSTRAINT ck_fornecedor_status
+              CHECK (status IN ('ATIVO', 'INATIVO'))
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE fornecedor
+              DROP CONSTRAINT ck_fornecedor_status
+
+  - changeSet:
+      id: 003-04-add-estoque-minimo-artigo
+      author: notoriusfight
+      comment: Adiciona primeiro como nullable para preservar as linhas existentes.
+      changes:
+        - addColumn:
+            tableName: artigo
+            columns:
+              - column:
+                  name: estoque_minimo
+                  type: NUMERIC(18,3)
+      rollback:
+        - dropColumn:
+            tableName: artigo
+            columnName: estoque_minimo
+
+  - changeSet:
+      id: 003-05-fill-estoque-minimo-artigo
+      author: notoriusfight
+      comment: Preenche as linhas antigas antes de tornar a coluna obrigatória.
+      changes:
+        - update:
+            tableName: artigo
+            columns:
+              - column:
+                  name: estoque_minimo
+                  valueNumeric: 0
+            where: estoque_minimo IS NULL
+      rollback:
+        - update:
+            tableName: artigo
+            columns:
+              - column:
+                  name: estoque_minimo
+                  value: null
+
+  - changeSet:
+      id: 003-06-not-null-estoque-minimo-artigo
+      author: notoriusfight
+      changes:
+        - addNotNullConstraint:
+            tableName: artigo
+            columnName: estoque_minimo
+            columnDataType: NUMERIC(18,3)
+      rollback:
+        - dropNotNullConstraint:
+            tableName: artigo
+            columnName: estoque_minimo
+            columnDataType: NUMERIC(18,3)
+
+  - changeSet:
+      id: 003-07-check-estoque-minimo-artigo
+      author: notoriusfight
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              ADD CONSTRAINT ck_artigo_estoque_minimo
+              CHECK (estoque_minimo >= 0)
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              DROP CONSTRAINT ck_artigo_estoque_minimo
+
+  - changeSet:
+      id: 003-08-add-fornecedor-artigo
+      author: notoriusfight
+      comment: Fornecedor é opcional para manter compatibilidade com artigos existentes.
+      changes:
+        - addColumn:
+            tableName: artigo
+            columns:
+              - column:
+                  name: fornecedor_id
+                  type: BIGINT
+      rollback:
+        - dropColumn:
+            tableName: artigo
+            columnName: fornecedor_id
+
+  - changeSet:
+      id: 003-09-foreign-key-artigo-fornecedor
+      author: notoriusfight
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: artigo
+            baseColumnNames: fornecedor_id
+            referencedTableName: fornecedor
+            referencedColumnNames: id
+            constraintName: fk_artigo_fornecedor
+            onDelete: RESTRICT
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: artigo
+            constraintName: fk_artigo_fornecedor

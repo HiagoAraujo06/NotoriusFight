@@ -1,0 +1,112 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-01-caracteristicas-artigo
+      author: notoriusfight
+      comment: Acrescenta marca, modalidade e tamanho, próprios de artigos de luta.
+      changes:
+        - addColumn:
+            tableName: artigo
+            columns:
+              - column:
+                  name: marca
+                  type: VARCHAR(80)
+                  defaultValue: NotoriusFight
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modalidade
+                  type: VARCHAR(20)
+                  defaultValue: GERAL
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tamanho
+                  type: VARCHAR(20)
+                  defaultValue: ÚNICO
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropColumn:
+            tableName: artigo
+            columnName: tamanho
+        - dropColumn:
+            tableName: artigo
+            columnName: modalidade
+        - dropColumn:
+            tableName: artigo
+            columnName: marca
+
+  - changeSet:
+      id: 009-02-check-modalidade-artigo
+      author: notoriusfight
+      comment: Restringe a modalidade aos valores do enum Java.
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              ADD CONSTRAINT ck_artigo_modalidade
+              CHECK (modalidade IN ('BOXE', 'MUAY_THAI', 'JIU_JITSU', 'JUDO',
+              'KARATE', 'TAEKWONDO', 'MMA', 'GERAL'))
+      rollback:
+        - sql:
+            sql: ALTER TABLE artigo DROP CONSTRAINT ck_artigo_modalidade
+
+  - changeSet:
+      id: 009-03-motivo-senha-alterada
+      author: notoriusfight
+      comment: Permite revogar sessões quando a senha é trocada.
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE sessao_refresh_token
+              DROP CONSTRAINT ck_sessao_refresh_token_motivo
+        - sql:
+            sql: >
+              ALTER TABLE sessao_refresh_token
+              ADD CONSTRAINT ck_sessao_refresh_token_motivo
+              CHECK (motivo_revogacao IS NULL OR motivo_revogacao IN
+              ('LOGOUT', 'LOGOUT_GLOBAL', 'INATIVIDADE', 'EXPIRACAO_ABSOLUTA',
+              'REUTILIZACAO', 'CONTA_INATIVA', 'SENHA_ALTERADA'))
+      rollback:
+        - sql:
+            sql: >
+              UPDATE sessao_refresh_token SET motivo_revogacao = 'LOGOUT_GLOBAL'
+              WHERE motivo_revogacao = 'SENHA_ALTERADA'
+        - sql:
+            sql: >
+              ALTER TABLE sessao_refresh_token
+              DROP CONSTRAINT ck_sessao_refresh_token_motivo
+        - sql:
+            sql: >
+              ALTER TABLE sessao_refresh_token
+              ADD CONSTRAINT ck_sessao_refresh_token_motivo
+              CHECK (motivo_revogacao IS NULL OR motivo_revogacao IN
+              ('LOGOUT', 'LOGOUT_GLOBAL', 'INATIVIDADE', 'EXPIRACAO_ABSOLUTA',
+              'REUTILIZACAO', 'CONTA_INATIVA'))
+
+  - changeSet:
+      id: 009-04-indices-chaves-estrangeiras
+      author: notoriusfight
+      comment: O PostgreSQL não indexa chaves estrangeiras automaticamente.
+      changes:
+        - sql:
+            sql: CREATE INDEX idx_artigo_categoria ON artigo (categoria_id)
+        - sql:
+            sql: CREATE INDEX idx_artigo_fornecedor ON artigo (fornecedor_id)
+        - sql:
+            sql: CREATE INDEX idx_venda_cliente ON venda (cliente_id)
+        - sql:
+            sql: CREATE INDEX idx_venda_vendedor ON venda (vendedor_id)
+        - sql:
+            sql: CREATE INDEX idx_item_venda_artigo ON item_venda (artigo_id)
+      rollback:
+        - sql:
+            sql: DROP INDEX idx_item_venda_artigo
+        - sql:
+            sql: DROP INDEX idx_venda_vendedor
+        - sql:
+            sql: DROP INDEX idx_venda_cliente
+        - sql:
+            sql: DROP INDEX idx_artigo_fornecedor
+        - sql:
+            sql: DROP INDEX idx_artigo_categoria

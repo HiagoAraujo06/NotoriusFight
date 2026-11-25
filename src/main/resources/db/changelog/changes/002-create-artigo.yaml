@@ -1,0 +1,134 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-01-create-artigo
+      author: notoriusfight
+      comment: Cria a tabela principal de artigos.
+      changes:
+        - createTable:
+            tableName: artigo
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_artigo
+                    nullable: false
+              - column:
+                  name: sku
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: descricao
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: saldo_estoque
+                  type: NUMERIC(18,3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valor_unitario
+                  type: NUMERIC(18,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data_cadastro
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: categoria_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: artigo
+
+  - changeSet:
+      id: 002-02-unique-sku
+      author: notoriusfight
+      comment: Garante a unicidade global do SKU.
+      changes:
+        - addUniqueConstraint:
+            tableName: artigo
+            columnNames: sku
+            constraintName: uk_artigo_sku
+      rollback:
+        - dropUniqueConstraint:
+            tableName: artigo
+            constraintName: uk_artigo_sku
+
+  - changeSet:
+      id: 002-03-foreign-key-categoria
+      author: notoriusfight
+      comment: Liga cada artigo ao sua categoria.
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: artigo
+            baseColumnNames: categoria_id
+            referencedTableName: categoria
+            referencedColumnNames: id
+            constraintName: fk_artigo_categoria
+            onDelete: RESTRICT
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: artigo
+            constraintName: fk_artigo_categoria
+
+  - changeSet:
+      id: 002-04-check-saldo-estoque
+      author: notoriusfight
+      comment: Impede saldo negativo inclusive fora da aplicação Java.
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              ADD CONSTRAINT ck_artigo_saldo_estoque
+              CHECK (saldo_estoque >= 0)
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              DROP CONSTRAINT ck_artigo_saldo_estoque
+
+  - changeSet:
+      id: 002-05-check-valor-unitario
+      author: notoriusfight
+      comment: Impede valor unitário negativo inclusive fora da aplicação Java.
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              ADD CONSTRAINT ck_artigo_valor_unitario
+              CHECK (valor_unitario >= 0)
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              DROP CONSTRAINT ck_artigo_valor_unitario
+
+  - changeSet:
+      id: 002-06-check-status-artigo
+      author: notoriusfight
+      comment: Restringe o status aos valores definidos no enum Java.
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              ADD CONSTRAINT ck_artigo_status
+              CHECK (status IN ('ATIVO', 'INATIVO'))
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE artigo
+              DROP CONSTRAINT ck_artigo_status

@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-01-catalogo-demonstracao
+      author: notoriusfight
+      context: demo
+      comment: Catálogo fictício, carregado somente no profile dev.
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              INSERT INTO categoria (nome, status) VALUES
+                ('Luvas', 'ATIVO'), ('Kimonos', 'ATIVO'), ('Proteções', 'ATIVO'),
+                ('Vestuário', 'ATIVO'), ('Equipamentos de treino', 'ATIVO');
+              INSERT INTO fornecedor (razao_social, cnpj, status) VALUES
+                ('Arena Distribuidora Ltda.', '11222333000181', 'ATIVO'),
+                ('Tatame Indústria Têxtil Ltda.', '11444777000161', 'ATIVO');
+              INSERT INTO artigo (sku, descricao, marca, modalidade, tamanho,
+                  saldo_estoque, valor_unitario, estoque_minimo, data_cadastro,
+                  status, categoria_id, fornecedor_id)
+              SELECT v.sku, v.descricao, v.marca, v.modalidade, v.tamanho,
+                  v.saldo, v.valor, v.minimo, CURRENT_DATE, 'ATIVO', c.id, f.id
+              FROM (VALUES
+                ('NF-LUV-BX-12', 'Luva de boxe em couro', 'NotoriusFight', 'BOXE', '12 OZ', 20, 289.90, 5, 'Luvas', '11222333000181'),
+                ('NF-LUV-BX-14', 'Luva de boxe em couro', 'NotoriusFight', 'BOXE', '14 OZ', 15, 299.90, 5, 'Luvas', '11222333000181'),
+                ('NF-LUV-MMA-M', 'Luva de MMA aberta', 'NotoriusFight', 'MMA', 'M', 12, 179.90, 4, 'Luvas', '11222333000181'),
+                ('NF-KIM-JJ-A2', 'Kimono de jiu-jitsu trançado', 'NotoriusFight', 'JIU_JITSU', 'A2', 10, 449.90, 3, 'Kimonos', '11444777000161'),
+                ('NF-KIM-JU-A3', 'Judogi de treino', 'NotoriusFight', 'JUDO', 'A3', 8, 399.90, 3, 'Kimonos', '11444777000161'),
+                ('NF-KIM-KA-A1', 'Karategi leve', 'NotoriusFight', 'KARATE', 'A1', 8, 219.90, 3, 'Kimonos', '11444777000161'),
+                ('NF-CAN-MT-G', 'Caneleira anatômica', 'NotoriusFight', 'MUAY_THAI', 'G', 14, 239.90, 4, 'Proteções', '11222333000181'),
+                ('NF-BUC-UN', 'Protetor bucal moldável', 'NotoriusFight', 'GERAL', 'ÚNICO', 40, 39.90, 10, 'Proteções', '11222333000181'),
+                ('NF-COL-TK-M', 'Colete protetor', 'NotoriusFight', 'TAEKWONDO', 'M', 3, 269.90, 4, 'Proteções', '11222333000181'),
+                ('NF-SHO-MT-M', 'Short de luta', 'NotoriusFight', 'MUAY_THAI', 'M', 25, 129.90, 6, 'Vestuário', '11444777000161'),
+                ('NF-RAS-JJ-G', 'Rash guard manga longa', 'NotoriusFight', 'JIU_JITSU', 'G', 18, 159.90, 5, 'Vestuário', '11444777000161'),
+                ('NF-SAC-GER-120', 'Saco de pancada', 'NotoriusFight', 'GERAL', '120 CM', 5, 349.90, 2, 'Equipamentos de treino', '11222333000181')
+              ) AS v(sku, descricao, marca, modalidade, tamanho, saldo, valor, minimo, categoria, cnpj)
+              JOIN categoria c ON c.nome = v.categoria
+              JOIN fornecedor f ON f.cnpj = v.cnpj;
+      rollback:
+        - sql:
+            sql: DELETE FROM artigo WHERE sku LIKE 'NF-%'
+        - sql:
+            sql: DELETE FROM fornecedor WHERE cnpj IN ('11222333000181', '11444777000161')
+        - sql:
+            sql: >
+              DELETE FROM categoria WHERE nome IN ('Luvas', 'Kimonos', 'Proteções',
+              'Vestuário', 'Equipamentos de treino')

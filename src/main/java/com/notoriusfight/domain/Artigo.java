@@ -1,0 +1,301 @@
+package com.notoriusfight.domain;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.Locale;
+import java.util.Objects;
+
+@Entity
+@DynamicUpdate
+@Table(
+        name = "artigo",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_artigo_sku",
+                columnNames = "sku"))
+public class Artigo {
+
+    public static final String MARCA_PROPRIA = "NotoriusFight";
+    public static final String TAMANHO_UNICO = "ÚNICO";
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "sku", nullable = false, length = 50)
+    private String sku;
+
+    @Column(nullable = false, length = 150)
+    private String descricao;
+
+    @Column(name = "saldo_estoque", nullable = false, precision = 18, scale = 3)
+    private BigDecimal saldoEstoque;
+
+    @Column(name = "valor_unitario", nullable = false, precision = 18, scale = 2)
+    private BigDecimal valorUnitario;
+
+    @Column(name = "estoque_minimo", nullable = false, precision = 18, scale = 3)
+    private BigDecimal estoqueMinimo;
+
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDate dataCadastro;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Status status;
+
+    @Column(nullable = false, length = 80)
+    private String marca = MARCA_PROPRIA;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Modalidade modalidade = Modalidade.GERAL;
+
+    @Column(nullable = false, length = 20)
+    private String tamanho = TAMANHO_UNICO;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "categoria_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_artigo_categoria"))
+    private Categoria categoria;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "fornecedor_id",
+            foreignKey = @ForeignKey(name = "fk_artigo_fornecedor"))
+    private Fornecedor fornecedor;
+
+    protected Artigo() {
+    }
+
+    public Artigo(
+            String sku,
+            String descricao,
+            BigDecimal saldoEstoque,
+            BigDecimal valorUnitario,
+            LocalDate dataCadastro) {
+        this(
+                sku,
+                descricao,
+                saldoEstoque,
+                valorUnitario,
+                BigDecimal.ZERO,
+                dataCadastro);
+    }
+
+    public Artigo(
+            String sku,
+            String descricao,
+            BigDecimal saldoEstoque,
+            BigDecimal valorUnitario,
+            BigDecimal estoqueMinimo,
+            LocalDate dataCadastro) {
+        this.sku = validarTextoObrigatorio(
+                sku,
+                "SKU é obrigatório");
+        this.descricao = validarTextoObrigatorio(
+                descricao,
+                "Descrição é obrigatória");
+        this.saldoEstoque = validarNaoNegativo(
+                saldoEstoque,
+                "Saldo de estoque não pode ser negativo");
+        this.valorUnitario = validarNaoNegativo(
+                valorUnitario,
+                "Valor unitário não pode ser negativo");
+        this.estoqueMinimo = validarNaoNegativo(
+                estoqueMinimo,
+                "Estoque mínimo não pode ser negativo");
+        this.dataCadastro = Objects.requireNonNull(
+                dataCadastro,
+                "Data de cadastro é obrigatória");
+        this.status = Status.ATIVO;
+    }
+
+    public void definirCaracteristicas(
+            String marca,
+            Modalidade modalidade,
+            String tamanho) {
+        this.marca = validarTextoObrigatorio(marca, "Marca é obrigatória");
+        if (modalidade == null) {
+            throw new IllegalArgumentException("Modalidade é obrigatória");
+        }
+        this.modalidade = modalidade;
+        this.tamanho = validarTextoObrigatorio(tamanho, "Tamanho é obrigatório")
+                .toUpperCase(Locale.ROOT);
+    }
+
+    public BigDecimal calcularValorEstoque() {
+        return saldoEstoque
+                .multiply(valorUnitario)
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void receberEstoque(BigDecimal quantidade) {
+        validarPositivo(quantidade, "Quantidade recebida deve ser maior que zero");
+        this.saldoEstoque = saldoEstoque.add(quantidade);
+    }
+
+    public void retirarEstoque(BigDecimal quantidade) {
+        validarPositivo(quantidade, "Quantidade retirada deve ser maior que zero");
+
+        if (saldoEstoque.compareTo(quantidade) < 0) {
+            throw new IllegalArgumentException("Saldo de estoque insuficiente");
+        }
+
+        this.saldoEstoque = saldoEstoque.subtract(quantidade);
+    }
+
+    public void alterarDescricao(String novaDescricao) {
+        this.descricao = validarTextoObrigatorio(
+                novaDescricao,
+                "Descrição é obrigatória");
+    }
+
+    public void alterarValorUnitario(BigDecimal novoValor) {
+        this.valorUnitario = validarNaoNegativo(
+                novoValor,
+                "Valor unitário não pode ser negativo");
+    }
+
+    public void alterarEstoqueMinimo(BigDecimal novoEstoqueMinimo) {
+        this.estoqueMinimo = validarNaoNegativo(
+                novoEstoqueMinimo,
+                "Estoque mínimo não pode ser negativo");
+    }
+
+    public void alterarCategoria(Categoria novaCategoria) {
+        Objects.requireNonNull(
+                novaCategoria,
+                "Categoria é obrigatória");
+        if (this.categoria == novaCategoria) {
+            return;
+        }
+
+        novaCategoria.validarInclusao(this);
+        if (this.categoria != null) {
+            this.categoria.removerInternamente(this);
+        }
+        this.categoria = novaCategoria;
+        novaCategoria.adicionarInternamente(this);
+    }
+
+    public void ativar() {
+        this.status = Status.ATIVO;
+    }
+
+    public void inativar() {
+        this.status = Status.INATIVO;
+    }
+
+    void associarAo(Categoria categoria) {
+        Objects.requireNonNull(categoria, "Categoria é obrigatória");
+
+        if (this.categoria != null && this.categoria != categoria) {
+            throw new IllegalStateException("Artigo já pertence a outra categoria");
+        }
+
+        this.categoria = categoria;
+    }
+
+    public void associarFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = Objects.requireNonNull(
+                fornecedor,
+                "Fornecedor é obrigatório");
+    }
+
+    public void alterarFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public BigDecimal getSaldoEstoque() {
+        return saldoEstoque;
+    }
+
+    public BigDecimal getValorUnitario() {
+        return valorUnitario;
+    }
+
+    public BigDecimal getEstoqueMinimo() {
+        return estoqueMinimo;
+    }
+
+    public LocalDate getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public Modalidade getModalidade() {
+        return modalidade;
+    }
+
+    public String getTamanho() {
+        return tamanho;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    private static String validarTextoObrigatorio(String texto, String mensagem) {
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException(mensagem);
+        }
+        return texto.trim();
+    }
+
+    private static BigDecimal validarNaoNegativo(BigDecimal valor, String mensagem) {
+        Objects.requireNonNull(valor, mensagem);
+        if (valor.signum() < 0) {
+            throw new IllegalArgumentException(mensagem);
+        }
+        return valor;
+    }
+
+    private static void validarPositivo(BigDecimal valor, String mensagem) {
+        Objects.requireNonNull(valor, mensagem);
+        if (valor.signum() <= 0) {
+            throw new IllegalArgumentException(mensagem);
+        }
+    }
+}
