@@ -1,0 +1,13 @@
+package com.notoriusfight;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class NotoriusFightApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
